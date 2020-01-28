@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
@@ -13,6 +13,7 @@ using UnityEngine.SceneManagement;
 public class Communicator : MonoBehaviour
 {
     public static Communicator instance = null;
+    private InputSignal _inputSignal = null;
 
     private Utils.PacketID _enumPacket;
     private UdpClient _client_recv;
@@ -29,12 +30,13 @@ public class Communicator : MonoBehaviour
     private Utils.stPacket_HW _hwInfo;
 
     private int _sceneNum;
-    private bool _bSceneStart  { get; set; }
+    private bool _bSceneStart;
 
     // ====================== bool variable ================= 
     private bool _bThread;
     private bool _bWind;
-    private bool _bPause;
+    public bool _bPause { get; set; }
+    private bool _bTutorialCoroutine;
     private bool _bApplicationQuit;
 
     private bool _bRunningThread;
@@ -90,6 +92,7 @@ public class Communicator : MonoBehaviour
         _bSceneChange = false;
         _sceneNum = -1;
         _bSceneStart = false;
+        _bTutorialCoroutine = false;
 
         _windZone = GameObject.FindGameObjectWithTag("WindZone").GetComponent<WindZone>();
     }
@@ -111,6 +114,11 @@ public class Communicator : MonoBehaviour
         Debug.Log("SceneLoadComplete()");
 
         SceneManager.sceneLoaded += SceneLoadComplete;
+
+        if (SceneManager.GetActiveScene().name == "Tutorial_Scene_00")
+        {
+            _inputSignal = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<InputSignal>();
+        }
     }
 
     void Update()
@@ -130,6 +138,16 @@ public class Communicator : MonoBehaviour
         else
         {
             Time.timeScale = 1f;
+        }
+
+        if (_bTutorialCoroutine)
+        {
+            if (SceneManager.GetActiveScene().name == "Tutorial_Scene_00")
+            {
+                if (!_bPause) _inputSignal.StartTutorialCoroutine();
+                else if (_bPause) _inputSignal.StopTutorialCoroutine();
+            }
+            _bTutorialCoroutine = false;
         }
 
         if (_bApplicationQuit)
@@ -171,11 +189,19 @@ public class Communicator : MonoBehaviour
         _windInfo.Convert_byte(data, size);
 
         Send_Ui(data);
+
+        if (SceneManager.GetActiveScene().name == "Tutorial_Scene_00")
+        {
+            _inputSignal = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<InputSignal>();
+        }
     }
 
     void Send_Ui(byte[] data)
     {
-        _client_send.Send(data, data.Length);
+        if (_client_send != null)
+        {
+            _client_send.Send(data, data.Length);
+        }
     }
 
     void ReceiveData()
@@ -198,6 +224,13 @@ public class Communicator : MonoBehaviour
                             _sceneNum = 0;
                             _bSceneChange = true;
                             _bSceneStart = false;
+                            _bPause = false;
+                            _bTutorialCoroutine = false;
+
+                            Utils.stPacket_Button packet;
+                            packet.id = Utils.PacketID.SIMULATOR_PAUSE_SEND;
+                            packet.value = _bPause ? 1 : 0;
+                            SendPacket(packet);
                         }
                         break;
 
@@ -206,6 +239,13 @@ public class Communicator : MonoBehaviour
                             _sceneNum = 1;
                             _bSceneChange = true;
                             _bSceneStart = false;
+                            _bPause = false;
+                            _bTutorialCoroutine = false;
+
+                            Utils.stPacket_Button packet;
+                            packet.id = Utils.PacketID.SIMULATOR_PAUSE_SEND;
+                            packet.value = _bPause ? 1 : 0;
+                            SendPacket(packet);
                         }
                         break;
 
@@ -228,6 +268,12 @@ public class Communicator : MonoBehaviour
                     case Utils.PacketID.SIMULATOR_PAUSE_SEND:          // 일시 정지 신호
                         {
                             _bPause = !_bPause;
+                            _bTutorialCoroutine = !_bTutorialCoroutine;
+                            Utils.stPacket_Button packet;
+                            packet.id = Utils.PacketID.SIMULATOR_PAUSE_SEND;
+                            packet.value = _bPause ? 1 : 0;
+                            packet.Convert_byte(data, data.Length);
+                            Send_Ui(data);
                         }
                         break;
 
@@ -347,4 +393,15 @@ public class Communicator : MonoBehaviour
     {
         _bSceneStart = value;
     }
+
+    public void SendPacket<T>(T packet) where T : Utils.Convert
+    {
+        int size = Marshal.SizeOf(packet);
+        byte[] data = new byte[size];
+
+        packet.Convert_byte(data, size);
+
+        Send_Ui(data);
+    }
+
 }
