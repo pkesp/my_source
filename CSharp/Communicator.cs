@@ -32,6 +32,8 @@ public class Communicator : MonoBehaviour
     private int _sceneNum;
     private bool _bSceneStart;
 
+    private int _tempNum;
+
     // ====================== bool variable ================= 
     private bool _bThread;
     private bool _bWind;
@@ -54,13 +56,9 @@ public class Communicator : MonoBehaviour
             instance = this;
         else if (instance != this)
         {
-            Destroy(gameObject);
-            Debug.Log("Destroy gameObject");
+            Destroy(gameObject);        
             return;
         }
-
-        Debug.Log("Destroy gameObject after");
-
         DontDestroyOnLoad(gameObject);
         gameObject.tag = "Communicator";
 
@@ -95,6 +93,9 @@ public class Communicator : MonoBehaviour
         _bTutorialCoroutine = false;
 
         _windZone = GameObject.FindGameObjectWithTag("WindZone").GetComponent<WindZone>();
+
+        // Test
+        _tempNum = 0;
     }
 
     //. Start is called before the first frame update
@@ -127,8 +128,6 @@ public class Communicator : MonoBehaviour
         {
             _windZone.transform.Rotate(Vector3.up, _windInfo.windDegree - _windZone.transform.rotation.eulerAngles.y, Space.World);
             _windZone.windMain = _windInfo.windForce;
-
-            _bWind = false;
         }
 
         if (_bPause)
@@ -158,7 +157,7 @@ public class Communicator : MonoBehaviour
 
         if (_bSceneChange)
         {
-            StartCoroutine(MyLoadScene(_sceneNum));
+            StartCoroutine(MyLoadScene(_sceneNum, 0f));
 
             _bSceneChange = false;
         }
@@ -168,9 +167,16 @@ public class Communicator : MonoBehaviour
     {
     }
 
-    public IEnumerator MyLoadScene(int loadSceneNum)
+    public IEnumerator MyLoadScene(int loadSceneNum, float time)
     {
+        yield return new WaitForSecondsRealtime(time);
+
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(loadSceneNum, LoadSceneMode.Single);
+        Utils.stPacket_Button packet;
+        packet.id = (Utils.PacketID)loadSceneNum;
+        packet.value = 0;
+        SendPacket(packet);
+        _bSceneStart = false;
 
         while (!asyncLoad.isDone)
         {
@@ -261,10 +267,6 @@ public class Communicator : MonoBehaviour
                         }
                         break;
 
-                    case Utils.PacketID.SIMULATOR_MULTI_POSITION_RECV: // 멀티 연결시 상대방의 위치 정보 받기
-                        Debug.Log("POSITION_RECV");
-                        break;
-
                     case Utils.PacketID.SIMULATOR_PAUSE_SEND:          // 일시 정지 신호
                         {
                             _bPause = !_bPause;
@@ -277,20 +279,7 @@ public class Communicator : MonoBehaviour
                         }
                         break;
 
-                    case Utils.PacketID.SIMULATOR_RESULT_SHOW_SEND:    // 결과창 보여줘라 신호
-                        Debug.Log("RESULT_SHOW");
-                        break;
-
-                    case Utils.PacketID.SIMULATOR_SCORE_SEND:          // 연결 되어 있다면 점수 보내줘라
-                        Debug.Log("SCORE");
-                        break;
-
-                    case Utils.PacketID.SIMULATOR_SOUND_SEND:          // 받은 사운드 적용 시키는 곳
-                        Debug.Log("SOUND");
-                        break;
-
                     case Utils.PacketID.SIMULATOR_STOP_SEND:           // 유니티 종료 신호
-                        Debug.Log("STOP");
                         _bThread = false;           // threaad 종료.
                         _bApplicationQuit = true;   // game 종료
                         break;
@@ -301,6 +290,14 @@ public class Communicator : MonoBehaviour
                             _winPacket.Convert_ByteToStructure(data);
                             _windInfo.windDegree = _winPacket.windDegree;
                             _windInfo.windForce = _winPacket.windForce;
+
+                            ImportDllData._windDir = _winPacket.windDegree;
+                            ImportDllData._windSpd = _winPacket.windForce;
+
+                            if (ImportDllData._windSpd == 0) ImportDllData._windSpd = 2.8;
+                            else if (ImportDllData._windSpd == 1) ImportDllData._windSpd = 5.5;
+                            else if (ImportDllData._windSpd == 2) ImportDllData._windSpd = 7;
+
                             _bWind = true;
                         }
                         break;
@@ -321,8 +318,6 @@ public class Communicator : MonoBehaviour
                         {
                             Utils.stPacket_HW packet = new Utils.stPacket_HW();
                             packet.Convert_ByteToStructure(data);
-                            Debug.Log("############# SIMULATOR1_HARDWARE #############");
-                            Debug.Log(packet.left + ", " + packet.right);
                             SetHWSignal(packet);
                         }
                         break;
@@ -404,4 +399,14 @@ public class Communicator : MonoBehaviour
         Send_Ui(data);
     }
 
+    public int GetTempNum()
+    {
+        return (int)_enumPacket;
+    }
+
+    public void SetTempNum(int num)
+    {
+        _enumPacket = (Utils.PacketID)num;
+    }
+    
 }

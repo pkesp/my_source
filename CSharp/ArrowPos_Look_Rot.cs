@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class ArrowPos_Look_Rot : MonoBehaviour
 {
-    public Transform targetTransform;
+    private Transform _targetTransform;
+    private RingCollisionManager _ringManager;
 
     private float rotAngle;
     private Vector3 pos;
@@ -19,6 +20,8 @@ public class ArrowPos_Look_Rot : MonoBehaviour
         rotSpd = 200f;
         dist_forward = 10f;
         dist_up = 2f;
+
+        _ringManager = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<RingCollisionManager>();
     }
 
     // Update is called once per frame
@@ -28,16 +31,11 @@ public class ArrowPos_Look_Rot : MonoBehaviour
         pos = Camera.main.transform.position + Camera.main.transform.forward * dist_forward + Camera.main.transform.up * dist_up;
         this.transform.position = pos;
 
-        // #### ui direction set 1 ####
-        //dir = targetTransform.position - this.transform.position;
-        //dir.Normalize();
-        //this.transform.forward = dir;
-
         // #### ui direction set 2 ####
-        this.transform.LookAt(targetTransform);
+        this.transform.LookAt(_ringManager.GetCurrentTarget());
 
         // #### ui rotation set ####
-        rotAngle += rotSpd * Time.deltaTime;
-        this.transform.Rotate(Vector3.forward, rotAngle, Space.Self);
+        //rotAngle += rotSpd * Time.deltaTime;
+        //this.transform.Rotate(Vector3.forward, rotAngle, Space.Self);
     }
 }

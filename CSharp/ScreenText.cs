@@ -48,8 +48,8 @@ public class ScreenText : MonoBehaviour
             }
             else // destroy code
             {
-                _txt.text = " ";
-                //SceneManager.LoadScene("Score_Scene_00", LoadSceneMode.Single);
+                _txt.text = "체험을 종료합니다. ";
+                StartCoroutine(_commu.MyLoadScene(0, 5f));
             }
         }
     }

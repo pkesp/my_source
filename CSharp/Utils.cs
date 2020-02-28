@@ -24,13 +24,38 @@ public class Utils : MonoBehaviour
         SIMULATOR_TIME,                        // 13 // 
         SIMULATOR_HARDWARE,                    // 14 
         SIMULATOR_PAN,                         // 15 
-        SIMULATOR_MOTOR                        // 16 //
+        SIMULATOR_MOTOR,                       // 16 //
+        SIMULATOR_RISING_WIND                  // 17
     }
 
     public interface Convert
     {
         void Convert_byte(byte[] data, int size);   // data 변수에 구조체 값을 넣어줌
         void Convert_ByteToStructure(byte[] data);  // data 변수에 있는 값을 구조체에 넣어줌
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct stPacket_rising : Convert
+    {
+        public PacketID id;
+        public bool wind;
+
+        public void Convert_byte(byte[] data, int size)
+        {
+            IntPtr ptr = Marshal.AllocHGlobal(size);
+            Marshal.StructureToPtr(this, ptr, false);
+            Marshal.Copy(ptr, data, 0, size);
+            Marshal.FreeHGlobal(ptr);
+        }
+
+        public void Convert_ByteToStructure(byte[] data)
+        {
+            int size = Marshal.SizeOf(this);
+            IntPtr ptr = Marshal.AllocHGlobal(size);
+            Marshal.Copy(data, 0, ptr, size);
+            this = (stPacket_rising)Marshal.PtrToStructure(ptr, typeof(stPacket_rising));
+            Marshal.FreeHGlobal(ptr);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

@@ -36,21 +36,20 @@ public class TerrainCollision : MonoBehaviour
             //Debug.Log("광선 쏜다");
             if (Physics.Raycast(_ray, out _hit, _maxDistance))
             {
-                //if (_hit.transform.tag.Equals("Cube"))
-                //{
-                //    Debug.Log("Cube 찾았다");
-                //}
-                if (_hit.distance < 2f)
+                if (_hit.transform.tag.Equals("Terrain"))
                 {
-                    Debug.Log("지면 찾았다");
-                    _isStandup = true;
-                    _hitPos = _hit.point;
-                    _hitPos.y += 4;
-                    _saveRot = this.transform.rotation.eulerAngles;
-                }
-                else
-                {
-                    _isStandup = false;
+                    if (_hit.distance < 2f)
+                    {
+                        Debug.Log("지면 찾았다");
+                        _isStandup = true;
+                        _hitPos = _hit.point;
+                        _hitPos.y += 4;
+                        _saveRot = this.transform.rotation.eulerAngles;
+                    }
+                    else
+                    {
+                        _isStandup = false;
+                    }
                 }
             }
             else
@@ -80,10 +79,6 @@ public class TerrainCollision : MonoBehaviour
             {
                 this.transform.rotation = Quaternion.Euler(Vector3.Slerp(_saveRot, new Vector3(360f, _saveRot.y, 360f), _standingSpd));
             }
-            //if (this.transform.position.y == _hitPos.y)
-            //{
-            //    //_isStandup = false;
-            //}
         }
     }
 
