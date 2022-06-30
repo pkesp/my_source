@@ -1,0 +1,35 @@
+﻿Build started 2019-02-13 오후 4:17:45.
+     1>Project "C:\Users\Steve Yoon\Desktop\LIGNex1_mainPlugin_latest\X-Plane-11-Window-Gravity-Sample.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /ISDK\CHeaders\XPLM /ISDK\CHeaders\Widgets /Zi /nologo /W3 /WX- /O2 /Ob1 /D WIN32 /D NDEBUG /D _WINDOWS /D _USRDLL /D SIMDATA_EXPORTS /D IBM=1 /D XPLM200=1 /D XPLM210=1 /D XPLM300=1 /D _CRT_SECURE_NO_WARNINGS /D _VC80_UPGRADE=0x0600 /D _WINDLL /D _MBCS /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\Release\64\\" /Fd".\Release\64\vc120.pdb" /Gd /TP /errorReport:prompt FlightSim_SW.cpp cCommunicator.cpp cDisplay.cpp cPlugin.cpp
+         FlightSim_SW.cpp
+     1>c:\users\steve yoon\desktop\lignex1_mainplugin_latest\Utill.h(9): warning C4005: '_CRT_SECURE_NO_WARNINGS' : macro redefinition
+                 command-line arguments :  see previous definition of '_CRT_SECURE_NO_WARNINGS'
+     1>c:\users\steve yoon\desktop\lignex1_mainplugin_latest\Utill.h(145): warning C4161: #pragma pack(pop...) : more pops than pushes
+     1>FlightSim_SW.cpp(39): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
+         cCommunicator.cpp
+     1>c:\users\steve yoon\desktop\lignex1_mainplugin_latest\Utill.h(9): warning C4005: '_CRT_SECURE_NO_WARNINGS' : macro redefinition
+                 command-line arguments :  see previous definition of '_CRT_SECURE_NO_WARNINGS'
+     1>c:\users\steve yoon\desktop\lignex1_mainplugin_latest\Utill.h(145): warning C4161: #pragma pack(pop...) : more pops than pushes
+         cDisplay.cpp
+     1>c:\users\steve yoon\desktop\lignex1_mainplugin_latest\Utill.h(9): warning C4005: '_CRT_SECURE_NO_WARNINGS' : macro redefinition
+                 command-line arguments :  see previous definition of '_CRT_SECURE_NO_WARNINGS'
+     1>c:\users\steve yoon\desktop\lignex1_mainplugin_latest\Utill.h(145): warning C4161: #pragma pack(pop...) : more pops than pushes
+         cPlugin.cpp
+     1>c:\users\steve yoon\desktop\lignex1_mainplugin_latest\Utill.h(9): warning C4005: '_CRT_SECURE_NO_WARNINGS' : macro redefinition
+                 command-line arguments :  see previous definition of '_CRT_SECURE_NO_WARNINGS'
+     1>c:\users\steve yoon\desktop\lignex1_mainplugin_latest\Utill.h(145): warning C4161: #pragma pack(pop...) : more pops than pushes
+     1>cPlugin.cpp(192): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+         Generating Code...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:".\Release\plugins\FlightSim_SW\64\win.xpl" /INCREMENTAL:NO /NOLOGO /LIBPATH:SDK\Libraries\Win Opengl32.lib odbc32.lib odbccp32.lib XPLM_64.lib XPWidgets_64.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST:NO /PDB:".\Release\plugins\FlightSim_SW\64\win.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\Release\64\X-Plane-11-Window-Gravity-Sample.lib" /MACHINE:X64 /DLL .\Release\64\cCommunicator.obj
+         .\Release\64\cDisplay.obj
+         .\Release\64\cPlugin.obj
+         .\Release\64\FlightSim_SW.obj
+            Creating library .\Release\64\X-Plane-11-Window-Gravity-Sample.lib and object .\Release\64\X-Plane-11-Window-Gravity-Sample.exp
+         X-Plane-11-Window-Gravity-Sample.vcxproj -> C:\Users\Steve Yoon\Desktop\LIGNex1_mainPlugin_latest\.\Release\plugins\FlightSim_SW\64\win.xpl
+     1>Done Building Project "C:\Users\Steve Yoon\Desktop\LIGNex1_mainPlugin_latest\X-Plane-11-Window-Gravity-Sample.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.11
